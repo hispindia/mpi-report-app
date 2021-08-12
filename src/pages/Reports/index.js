@@ -7,42 +7,35 @@ import {
     InputLabel,
     Button,
     Paper,
-    Menu
   } from "@material-ui/core";
 
-  import IconButton from '@material-ui/core/IconButton';
-  import MoreVertIcon from '@material-ui/icons/MoreVert';
-import clsx from "clsx";
 import { GridContainer, GridItem } from "../../components/Grid";
 import Chart from "./chart";
 import axios from "axios";
 import styles from "./styles";
 import "./styles.css";
+import clsx from 'clsx'
 
 import { makeStyles } from '@material-ui/core/styles'
-//import { DateRangePicker } from '@material-ui/lab';
-//import DateType from "./date";
+
 const useStyles = makeStyles(styles);
-const options = [
-    'Save as PDF',
-    'Print',
-    'Tabular',
-    'Pie Chart',
-  ];
- 
-  const ITEM_HEIGHT = 49;
+var username = "samta";
+var password = "Samta123";
+const headers = {
+    Authorization: "Basic " + btoa(`${username}:${password}`),
+  };
 
  
 function Reports() {
     
 const classes = useStyles();
-  var username = "samta";
-  var password = "Samta123";
+  
   var param = "";
   var headerCon = '';
   var isApiCalled = false;
   //var isAllReport = true;
-  let[isAllReport, setisAllReport] = React.useState(true);
+  let[isAllReport, setisAllReport] = React.useState(false);
+  let[ishospital, setishospital] = React.useState(false);
   let[isdistrict, setisDistrict] = React.useState(false);
   const [allHosptsName, setallHosptsName] = React.useState([]);
   const [allHosptsData, setallHosptsData] = React.useState([]);
@@ -52,8 +45,8 @@ const classes = useStyles();
   let [allDistricts, setallDistricts] = React.useState([]);
     var [reportType, setReportType] = React.useState('');
     var [districtId, setdistrictId] = React.useState([]);
+    var [disName, setDisName] = React.useState('');
     var [hosName, setHosName] = React.useState('');
-    var [disId, setdisId] = React.useState('');
     let [fromDate, setfromDate] = React.useState('');
     let [toDate, settoDate] = React.useState('');
     const [isDateOpened, setIsDateOpened] = React.useState(false);
@@ -63,17 +56,7 @@ const classes = useStyles();
     let[isGenerated, setisGenerated] = React.useState(false);
     
     const [startDate, setStartDate] = React.useState(new Date());
-    const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+ 
     var sDate = startDate.getDate()-1 +"-"+ startDate.getMonth() +"-"+ startDate.getFullYear();
     var eDate = startDate.getDate() +"-"+ startDate.getMonth()+1 +"-"+ startDate.getFullYear();
 
@@ -90,18 +73,18 @@ function getChart(){
     
         if(reportType === 'daily')
         {
-            hosName = "all";
-            headerCon = "";
             fromDate = (startDate.getDate()-1) +"-"+(startDate.getMonth()+1)+"-"+startDate.getFullYear();
-            setfromDate(fromDate);
-            console.log(fromDate);
-            toDate = (startDate.getDate()) +"-"+(startDate.getMonth()+1)+"-"+startDate.getFullYear();
+           toDate = (startDate.getDate()) +"-"+(startDate.getMonth()+1)+"-"+startDate.getFullYear();
             settoDate(toDate);
+        }       
+        if(disName !== 'all'){
+            console.log(disName);
+            var str = disName.split("-")
+            districtId.length = 0;            
+            districtId.push(str[1]) ;
         }
-        if(reportType === 'hospital')
-        {
+        else {
             hosName = "all";
-           
         }
         if(hosName === "all"){
             headerCon = "";
@@ -110,21 +93,7 @@ function getChart(){
             headerCon = '&hosp_name='+hosName;
         }
         
-        //console.log(fromDate)
-        //console.log(toDate)
-        const headers = {
-          Authorization: "Basic " + btoa(`${username}:${password}`),
-        };
-
-        if((!isAllReport && hosName !== 'all')){
-            districtId.length = 0;
-            districtId.push(disId) ;
-        }
-        else if(reportType === 'district'){
-            headerCon = "";
-            districtId.length = 0;
-            districtId.push(disId) ;
-        }
+        
         var newallHosptsData = [];
         var newallHosptsName = [];
         var newallHosptsmale = [];
@@ -190,28 +159,31 @@ function handleReportType(e){
     setIsChart(false);
     //isChart = false;
     setReportType(e.target.value) ;
-    if(e.target.value === 'daily' || e.target.value === 'hospital'){
+    if(e.target.value === 'daily'){
         setisAllReport(true) ;
     }
     else if(e.target.value === 'district'){
         setisDistrict(true);
     }
+    else if(e.target.value === 'hospital'){
+        setishospital(true) ;
+    }
     else{
+        setisDistrict(false);
+        setishospital(false) ;
         setisAllReport(false) ;
+
     }
 }
 function handleHospitalType(e){
     setIsChart(false);
-    setHosName(e.target.value ) ;
-    var str = e.target.value.split("-")
-    if(reportType === 'district'){
-        setdisId(str[1]);
-    }
-    else{
-        setdisId(str[0]);
-    }
-    console.log(str[0])
-    return  
+    setHosName(e.target.value ) ;    
+}
+function handleDistrictType(e){
+    //setIsChart(false);
+    setDisName(e.target.value ) ;
+    hosptName();
+    //var str = e.target.value.split("-")
 }
 
 function showPieChart(){
@@ -233,26 +205,40 @@ function showPieChart(){
     
 }
 function hosptName(){
-    var username = "samta";
-    var password = "Samta123";
-    let hosptNameList ;
-    if(allHospts.length > 0){
-        allHospts = allHospts.reduce(function(a,b){
-            if (a.indexOf(b) < 0 ) a.push(b);
-            return a;
-          },[]);
+    let hos = [];
+    
+    if(!ishospital && (disName !== '' || disName !== 'all')){
+        var data = [];
+        for(var i=0;i<=allHospts.length-1;i++){
+            var str2 = allHospts[i].split("-")
+            if(disName === (str2[0]+"-"+str2[1])){
+                data.push(str2[2]); 
+            }
+        }
+        console.log(data)
+        hos = data.map((x) => { 
+            return(
+                <MenuItem key={x} value={x} >{x}</MenuItem>)
+      })
+        
     }
+    return hos;
+}
+function districName(){
+    let districtList ;
+    
     if(allDistricts.length > 0){
         allDistricts = allDistricts.reduce(function(a,b){
             if (a.indexOf(b) < 0 ) a.push(b);
             return a;
           },[]);
     }
-    
-    const headers = {
-      Authorization: "Basic " + btoa(`${username}:${password}`),
-    };
-    //allHospts.length = 0;
+    if(allHospts.length > 0){
+        allHospts = allHospts.reduce(function(a,b){
+            if (a.indexOf(b) < 0 ) a.push(b);
+            return a;
+          },[]);
+    }
     var base_url = `http://localhost:8080/openmrs/ws/rest/v1/onlineappointment/hospitals?country_id=1&state_id=2&district_id=`;
     for(var y = 3; y <=  20 ; y++){
         var url = base_url + y;
@@ -261,6 +247,7 @@ function hosptName(){
       .then((response) => { 
           if(response.data.sessionLocation.length !== 0 )   {
             var searchdatanew = []; 
+            var newData = [];
             for (let i = 0; i < response.data.sessionLocation.length; i++) {                
                 searchdatanew.push(response.data.sessionLocation);                
                 let hospval = searchdatanew[0][i]["online_hospital_name"];
@@ -268,37 +255,24 @@ function hosptName(){
                 let district_id = searchdatanew[0][i]["online_hospital_district"]['online_location_id'];
                 if(!districtId.includes(district_name)){
                     districtId.push(district_name);
-                }
-                if(reportType === 'district'){
-                    allDistricts.push(district_id+"-"+district_name);
-                }
-                else{
-                    allHospts.push(district_id+"-"+hospval +" ( "+district_name+" )");
-                }
+                }                
+                allDistricts.push(district_id+"-"+district_name); 
+                allHospts.push(district_id+"-"+district_name+"-"+hospval );               
             }
           }
           
       })
-      if(reportType === 'district'){
-        hosptNameList = allDistricts.map((x) => { 
+      
+        districtList = allDistricts.map((x) => { 
             var str_id = x.split("-")
             return(
                 <MenuItem key={str_id[0]} value={x} >{str_id[1]}</MenuItem>)
       })
-        }else
-      {
-        //hosptNameList[0]= (<MenuItem value="all">ALL Facilities</MenuItem>)
-          hosptNameList = allHospts.map((y) => {
-        var str_id = y.split("-")
-        var str_name = str_id[1].split(" (");
-          return(
-          <MenuItem key={str_id[0]+"-"+str_name[0]} value={str_name[0]} >{str_id[1]}</MenuItem>)
-        }
-          );
-        }
+       
+        
     }
   
-return hosptNameList;
+return districtList;
 }
 function handleToDate(e){
     var tDate = e.target.value;
@@ -385,14 +359,24 @@ function handleChange(e){
             </Select>
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
-            <InputLabel htmlFor="age-native-simple">Health Facility Name</InputLabel>
-            <Select defaultValue="-1" disabled = {isAllReport} className={classes.field}
-            id="hosName" onChange={handleHospitalType}>
+            <InputLabel htmlFor="age-native-simple">District Name</InputLabel>
+            <Select defaultValue="-1" className={classes.field}
+            id="disName" onChange={handleDistrictType} >
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
-                {(reportType === 'gender') && (<MenuItem value="all" >ALL Facilities</MenuItem>)}
-                {hosptName()}
+                {!ishospital &&(<MenuItem value="all" >ALL District</MenuItem>)}
+                {districName()}
             </Select>
         </GridItem>
+        {!isdistrict &&(
+            <GridItem item xs={12} sm={6} md={3}>
+            <InputLabel htmlFor="age-native-simple">Health Facility Name</InputLabel>
+            <Select defaultValue="-1" className={classes.field}
+            id="hosName" onChange={handleHospitalType}>
+                <MenuItem value="-1" disabled>Please Select</MenuItem>
+                <MenuItem value="all" >ALL Facilities</MenuItem>
+                {hosptName()}
+            </Select>
+        </GridItem>)}
         
         <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">Date Range</InputLabel>

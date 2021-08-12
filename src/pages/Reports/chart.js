@@ -1,9 +1,8 @@
 import React from "react";
-import axios from "axios";
 
 import { GridContainer, GridItem } from "../../components/Grid";
-import {Pie, Bar} from 'react-chartjs-2';
-import SimpleListMenu from './simplelistmenu'
+import { Bar} from 'react-chartjs-2';
+import SimpleListMenu from './simplelistmenu';
 
 
 export default function Chart(props) {
@@ -104,46 +103,15 @@ export default function Chart(props) {
             <SimpleListMenu/>
         </GridItem>
       </GridContainer>
-      {!isGenderReport && !isHospitalReport && !isDistrictReport && (
+      {!isGenderReport &&(
  <GridContainer display={state.showChart} >
- <GridItem item xs={12} sm={6} md={6}>
  
-  <Pie
-   data={state}
-   options={{
-     title:{
-       display:true,
-       text:'Sum of Registrations',
-       fontSize:20
-     },
-     legend:{
-       display:true,
-       position:'right'
-     },
-     responsive:true
-   }}
- />
- 
- </GridItem>
  <GridItem item xs={6}>
  <Bar data={state} options={options} />
  </GridItem>
  </GridContainer>
       )}
-      {isDistrictReport &&(
-      <GridContainer display={state.showChart} border={1}>
- <GridItem item xs={12} sm={6} md={6}>
-    <Pie data={state} />
- </GridItem>
- </GridContainer>
- )}
-      {isHospitalReport &&(
-        <GridContainer display={state.showChart} >
- <GridItem item xs={12} sm={6} md={6}>
- <Bar data={state} options={options} />
- </GridItem>
- </GridContainer>
- )}
+    
  {isGenderReport && (
  <GridContainer>
  <Bar data={groupData} options={options} />
