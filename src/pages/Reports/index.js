@@ -11,7 +11,6 @@ import {
 
 import { GridContainer, GridItem } from "../../components/Grid";
 import Chart from "./chart";
-import axios from "axios";
 import styles from "./styles";
 import "./styles.css";
 import clsx from "clsx";
@@ -20,11 +19,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getAPI, getHispAPI } from "../../services";
 
 const useStyles = makeStyles(styles);
-var username = "samta";
-var password = "Samta123";
-const headers = {
-  Authorization: "Basic " + btoa(`${username}:${password}`),
-};
 
 function Reports() {
   const classes = useStyles();
