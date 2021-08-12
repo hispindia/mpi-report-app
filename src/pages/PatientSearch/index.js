@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Paper,
 } from "@material-ui/core/";
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import AddIcon from "@material-ui/icons/Add";
 import { GridContainer, GridItem } from "../../components/Grid";
@@ -19,6 +19,7 @@ import CustomizedMenus from "./ActionButton";
 import axios from "axios";
 import styles from "./styles";
 import "./styles.css";
+import { getHispAPI } from "../../services";
 
 const useStyles = makeStyles(styles);
 
@@ -35,20 +36,32 @@ const createData = (
   action,
   id
 ) => {
-  return { mpi,identifier, name, phone, gender, age, address, lvd,addhar, action, id };
+  return {
+    mpi,
+    identifier,
+    name,
+    phone,
+    gender,
+    age,
+    address,
+    lvd,
+    addhar,
+    action,
+    id,
+  };
 };
 
 export default function PatientSearch(props) {
   const classes = useStyles();
   var [searchDetails, setsearchDetails] = useState({
     phone: "",
-    mpi:"",
+    mpi: "",
     firstName: "",
     identifier: "",
     age: "",
     gender: "",
     lvd: "",
-    addhar:"",
+    addhar: "",
   });
   var [searchData, setsearchData] = useState([]);
   var [firstNameVal, setfirstNameVal] = useState("");
@@ -68,7 +81,7 @@ export default function PatientSearch(props) {
   });
   var [isDataPresent, setisDataPresent] = useState(false);
   var [phoneData, setphoneData] = useState(false);
-  
+
   var [addharData, setaddharData] = useState(false);
   var [nameData, setnameData] = useState(false);
   var [apihit, setapihit] = useState(false);
@@ -102,7 +115,7 @@ export default function PatientSearch(props) {
       width: 130,
     },
     { field: "phone", headerName: "Phone", width: 120 },
-    { field: "addhar", headerName: "Addhar No", width: 120 }       
+    { field: "addhar", headerName: "Addhar No", width: 120 },
   ];
 
   const isEnteredPressed = (charLen, event, name, eventName) => {
@@ -173,7 +186,8 @@ export default function PatientSearch(props) {
 
   const isSearchClicked = (charLen, event, name, eventName) => {
     if (eventName === "clicked") {
-      if ((addhar && addhar.length) > charLen ||
+      if (
+        (addhar && addhar.length) > charLen ||
         (phone && phone.length) > charLen ||
         (firstName && firstName.length > charLen) ||
         (identifier && identifier.length > charLen)
@@ -255,7 +269,8 @@ export default function PatientSearch(props) {
     } else if (name === "range" && eventName === "press") {
       if (
         age != "" &&
-        ((addhar && addhar.length) > charLen || (phone && phone.length) > charLen ||
+        ((addhar && addhar.length) > charLen ||
+          (phone && phone.length) > charLen ||
           (firstName && firstName.length > charLen) ||
           (identifier && identifier.length > charLen))
       ) {
@@ -471,8 +486,7 @@ export default function PatientSearch(props) {
     if (name === "identifier") {
       setidentifier(searchValue);
     }
-    
-   
+
     if (firstName) {
       var firstNameValue = firstName.toUpperCase();
     }
@@ -485,11 +499,15 @@ export default function PatientSearch(props) {
       setNameErrorMsj("");
       setPhoneErrorMsj("");
       setAddharErrorMsj("");
-      setErrors({ addharData: true, phoneData: true, nameData: true, identifierData: true });
+      setErrors({
+        addharData: true,
+        phoneData: true,
+        nameData: true,
+        identifierData: true,
+      });
       setLoading(true);
       setapihit(false);
 
-     
       let searchDataAlready = searchData;
 
       let isDataAlready = false;
@@ -498,8 +516,7 @@ export default function PatientSearch(props) {
         isDataAlready = true;
       }
 
-      if (isDataAlready) {        
-        
+      if (isDataAlready) {
         if (firstName) {
           filters["name"] = [firstName.toUpperCase()];
         }
@@ -509,10 +526,7 @@ export default function PatientSearch(props) {
         if (identifier) {
           filters["identifier"] = [identifier];
         }
-        let filterOutput = multiFilter(
-          searchDataAlready,
-          filters,
-        );
+        let filterOutput = multiFilter(searchDataAlready, filters);
         if (filterOutput.length > 0) {
           alreadystoredata = filterOutput;
         }
@@ -522,27 +536,20 @@ export default function PatientSearch(props) {
           setLoading(false);
         } else {
           let param = firstNameValue;
-          var username = "samta";
-          var password = "Samta123";
           param = checkData(
             param,
             firstNameValue,
             addharValue,
             phoneValue,
-            identifierValue,
+            identifierValue
           );
           if (firstNameValue || phoneValue || identifierValue || addharValue) {
             setnameData(false);
             setphoneData(false);
             setaddharData(false);
-            const headers = {
-              Authorization: "Basic " + btoa(`${username}:${password}`),
-            };
-            const url = `https://ln3.hispindia.org/openmrs/ws/hisp/rest/patient_search?name=${param}`;
-            axios
-              .get(url, { headers: headers })
+
+            getHispAPI(`/patient_search?name=${param}`)
               .then((response) => {
-               
                 setapihit(true);
                 var phoneNo = "";
                 var mpiId = "";
@@ -569,19 +576,17 @@ export default function PatientSearch(props) {
                       searchdatanew[0][i]["address"]["State Province"];
                     // let addr = ho_no + " " + district + " - " + statecode + " " + country + " " + pincode
                     let addr = district + " - " + statecode;
-                    if(addr !== 'undefined - undefined'){
+                    if (addr !== "undefined - undefined") {
                       addressrarr.push(addr);
                     }
-                    
                   }
                   if (searchdatanew[0][i]["person_attributes"]) {
                     phoneNo =
                       searchdatanew[0][i]["person_attributes"]["Phone Number*"];
-                      mpiId = 
-                      searchdatanew[0][i]["person_attributes"]["MPI ID"];
-                      addharNo=
+                    mpiId = searchdatanew[0][i]["person_attributes"]["MPI ID"];
+                    addharNo =
                       searchdatanew[0][i]["person_attributes"]["Aadhar*"];
-                    }                  
+                  }
                   let id = i;
 
                   storedata.push(
@@ -604,7 +609,7 @@ export default function PatientSearch(props) {
                   if (storedata.length > 0) {
                     let filterOutput = [];
                     setsearchData([]);
-                    
+
                     if (genderValue) {
                       filters["gender"] = [genderValue.toUpperCase()];
                     }
@@ -616,11 +621,8 @@ export default function PatientSearch(props) {
                     }
                     if (phoneValue) {
                       filters["phone"] = [phoneValue];
-                    }                    
-                    filterOutput = multiFilter(
-                      storedata,
-                      filters,
-                    );
+                    }
+                    filterOutput = multiFilter(storedata, filters);
 
                     if (filterOutput.length > 0) {
                       storedata = filterOutput;
@@ -656,25 +658,18 @@ export default function PatientSearch(props) {
         }
       } else {
         let param = firstNameValue;
-        var username = "samta";
-        var password = "Samta123";
         param = checkData(
           param,
           firstNameValue,
           phoneValue,
           addharValue,
-          identifierValue,
+          identifierValue
         );
         if (firstNameValue || phoneValue || identifierValue || addharValue) {
           setnameData(false);
           setphoneData(false);
 
-          const headers = {
-            Authorization: "Basic " + btoa(`${username}:${password}`),
-          };
-          const url = `https://ln3.hispindia.org/openmrs/ws/hisp/rest/patient_search?name=${param}`;
-          axios
-            .get(url, { headers: headers })
+          getHispAPI(`/patient_search?name=${param}`)
             .then((response) => {
               setapihit(true);
               var phoneNo = "";
@@ -703,18 +698,16 @@ export default function PatientSearch(props) {
                     searchdatanew[0][i]["address"]["State Province"];
                   // let addr = ho_no + " " + district + " - " + statecode + " " + country + " " + pincode
                   let addr = district + " - " + statecode;
-                  if(addr !== 'undefined - undefined'){
+                  if (addr !== "undefined - undefined") {
                     addressrarr.push(addr);
                   }
-                  
                 }
                 if (searchdatanew[0][i]["person_attributes"]) {
                   phoneNo =
                     searchdatanew[0][i]["person_attributes"]["Phone Number*"];
-                    mpiId = 
-                      searchdatanew[0][i]["person_attributes"]["MPI ID"];
-                      addharNo=
-                      searchdatanew[0][i]["person_attributes"]["Aadhar*"];
+                  mpiId = searchdatanew[0][i]["person_attributes"]["MPI ID"];
+                  addharNo =
+                    searchdatanew[0][i]["person_attributes"]["Aadhar*"];
                 }
                 if (searchdatanew[0][i]["visit_date"] != undefined) {
                   visitdate = searchdatanew[0][i]["visit_date"];
@@ -743,7 +736,7 @@ export default function PatientSearch(props) {
                 if (storedata.length > 0) {
                   let filterOutput = [];
                   setsearchData([]);
-                  
+
                   if (genderValue) {
                     filters["gender"] = [genderValue.toUpperCase()];
                   }
@@ -759,11 +752,8 @@ export default function PatientSearch(props) {
                   if (addharValue) {
                     filters["addhar"] = [addharValue];
                   }
-                  
-                  filterOutput = multiFilter(
-                    storedata,
-                    filters,
-                  );
+
+                  filterOutput = multiFilter(storedata, filters);
 
                   if (filterOutput.length > 0) {
                     storedata = filterOutput;
@@ -818,7 +808,12 @@ export default function PatientSearch(props) {
     setPhoneErrorMsj("");
     setAddharErrorMsj("");
     setLoading(false);
-    setErrors({ addharData:true,phoneData: true, nameData: true, identifierData: true });
+    setErrors({
+      addharData: true,
+      phoneData: true,
+      nameData: true,
+      identifierData: true,
+    });
     document.getElementById("searchForm").reset();
   };
 
@@ -855,7 +850,7 @@ export default function PatientSearch(props) {
               />
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
-            <TextField
+              <TextField
                 error={
                   !errors.phoneData &&
                   !errors.nameData &&
@@ -879,13 +874,14 @@ export default function PatientSearch(props) {
                 name="addhar"
                 autoComplete="addhar"
                 onKeyUp={(e) => searchOnKey(e, "addhar", "press")}
-                value={classes.addhar} type="number"
+                value={classes.addhar}
+                type="number"
                 className={classes.field}
                 onInput={(e) => {
                   e.target.value = Math.max(0, parseInt(e.target.value))
                     .toString()
                     .slice(0, 12);
-                }}               
+                }}
               />
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
@@ -921,7 +917,7 @@ export default function PatientSearch(props) {
                 }}
               />
             </GridItem>
-            
+
             <GridItem item xs={12} sm={6} md={3}>
               <TextField
                 error={
@@ -949,16 +945,14 @@ export default function PatientSearch(props) {
                 className={classes.field}
               />
             </GridItem>
-            
+
             <GridItem item xs={12} sm={6} md={3}>
               <FormControl
                 variant="outlined"
                 fullWidth
                 className={classes.field}
                 margin="dense"
-              >
-               
-              </FormControl>
+              ></FormControl>
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
               <Button
