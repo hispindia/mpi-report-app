@@ -71,6 +71,7 @@ const classes = useStyles();
 
 function getChart(){
     
+        setisGenerated(false);
         if(reportType === 'daily')
         {
             fromDate = (startDate.getDate()-1) +"-"+(startDate.getMonth()+1)+"-"+startDate.getFullYear();
@@ -161,12 +162,15 @@ function handleReportType(e){
     setReportType(e.target.value) ;
     if(e.target.value === 'daily'){
         setisAllReport(true) ;
+        setisDistrict(false);
+        setishospital(false) ;
     }
     else if(e.target.value === 'district'){
         setisDistrict(true);
     }
     else if(e.target.value === 'hospital'){
         setishospital(true) ;
+        setisDistrict(false);
     }
     else{
         setisDistrict(false);
