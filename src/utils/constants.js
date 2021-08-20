@@ -4,13 +4,17 @@ export const JSESSIONID = "JSESSIONID";
 export const SESSION_TIME_OUT = 1;
 export const HISP_API_URL =
   process.env.NODE_ENV === "development"
+   // ? "http://localhost:8080/openmrs/ws/hisp/rest"
+    //: "http://localhost:8080/openmrs/ws/hisp/rest";
     ? "https://ln3.hispindia.org/openmrs_mpi/ws/hisp/rest"
     : "https://ln3.hispindia.org/openmrs_mpi/ws/hisp/rest";
 
 export const BASE_URL =
   process.env.NODE_ENV === "development"
+ // ? "http://localhost:8080/openmrs/ws/rest/v1"
+  //: "http://localhost:8080/openmrs/ws/rest/v1";
     ? "https://ln3.hispindia.org/openmrs_mpi/ws/rest/v1"
-    : "https://ln3.hispindia.org/openmrs_mpi/ws/rest/v1";
+   : "https://ln3.hispindia.org/openmrs_mpi/ws/rest/v1";
 
 // Concepts
 export const HEIGHT = "5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

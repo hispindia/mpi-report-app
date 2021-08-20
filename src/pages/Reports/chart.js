@@ -1,67 +1,60 @@
-import React from "react";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Bar } from 'react-chartjs-2';
+import { GridContainer, GridItem } from '../../components/Grid';
 
-import { GridContainer, GridItem } from "../../components/Grid";
-import { Bar} from 'react-chartjs-2';
-import SimpleListMenu from './simplelistmenu';
-
-
+const useStyles = makeStyles({
+  chart: {
+    minWidth: 100,
+    maxWidth: 400
+  },
+});
 export default function Chart(props) {
   
-
+  const classes = useStyles();
   let[isGenderReport, setisGenderReport] = React.useState(false);
-  let[isHospitalReport, setisHospitalReport] = React.useState(false);
-  let[isDistrictReport, setisDistrictReport] = React.useState(false);
   let[newData, setnewData] = React.useState([]);
+
+  const legend = {
+    display: true,
+    position: "bottom",
+    labels: {
+      fontColor: "#323130",
+      fontSize: 14
+    }
+  };
   if(props.reportName === 'gender'){
     isGenderReport = true;
-  }
-  if(props.reportName === 'hospital'){
-    isHospitalReport = true;
-    newData.push(props.maleData);
-    newData.push(props.femaleData);
-  }
-  if(props.reportName === 'district'){
-    isDistrictReport = true;
-  }
+  }  
+  const data = {
+    labels: props.labelName,
+    datasets: [
+      {
+        label: 'Number of Registrations',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 150, 1.2)',
+          'rgba(54, 162, 235, 1.2)',
+          'rgba(255, 206, 86, 1.2)',
+          'rgba(75, 192, 192, 1.2)',
+          'rgba(153, 102, 255, 1.2)',
+          'rgba(255, 159, 64, 1.2)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
   
-  const state = {
-      showChart:false,
-      labels: props.labelName,
-      weight: "200",
-      height:"200",
-      borderWidth: 2,
-      datasets: [
-        {
-          label: 'Sum of Registrations',
-          backgroundColor: [
-            'rgba(255, 99, 132)',
-            'rgba(54, 162, 235)',
-            'rgba(255, 206, 86)',
-            'rgba(75, 192, 92)',
-            'rgba(153, 102, 255)',
-            'rgba(255, 159, 64)',
-          ],
-          borderColor: [
-            'rgba(255, 9, 192)',
-            'rgba(54, 14, 255)',
-            'rgba(255, 106, 10)',
-            'rgba(75, 192, 10)',
-            'rgba(153, 102, 105)',
-            'rgba(255, 89, 64)',
-          ],
-          borderWidth: 1,
-          data: props.data
-        }
-      ]
-    }
-
-
-    const groupData = {
-      showChart:false,
-      labels: props.labelName,
-      weight: "200",
-      height:"200",
-      borderWidth: 2,
+    const groupData = {      
+      labels: props.labelName,     
       datasets: [
         {
           label: 'Male',
@@ -75,48 +68,60 @@ export default function Chart(props) {
         },        
       ],
     };
-
-    var options = {
+    const options2 = {
+      legend: {
+        display: true,
+        position: 'left'
+    },
       scales: {
-          yAxes: [
-              {
-                  ticks: {
-                      min: 0
-                      ,max: 5
-                      ,callback: function(val) {
-                          if(val == 0 || val == 5) {
-                              return null;
-                          }
-                          return Number.isInteger(val) ? val : null;
-                      }
-                  }
-              }
-          ]
-      }
-  };
+        yAxes: [
+          {
+            stacked: true,
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            stacked: true,
+          },
+        ],
+      },
+    };
+    
+    const options = {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+      
+    };
     
     return (
       
       <>
-      <GridContainer display={state.showChart}>
-        <GridItem item xs={12} sm={6} md={6} >
-            <SimpleListMenu/>
-        </GridItem>
-      </GridContainer>
+      <GridContainer id="gd1">
+        
+        <GridItem item xs={6} sm={6} md={8}>
       {!isGenderReport &&(
- <GridContainer display={state.showChart} >
  
- <GridItem item xs={6}>
- <Bar data={state} options={options} />
- </GridItem>
- </GridContainer>
+ <Bar data={data} options={options}  legend={legend}/>
+ 
       )}
     
  {isGenderReport && (
- <GridContainer>
- <Bar data={groupData} options={options} />
- </GridContainer>
+  
+ <Bar data={groupData} options={options2} 
+/>
+ 
  )}
+ </GridItem></GridContainer>
  </>
     )
   
