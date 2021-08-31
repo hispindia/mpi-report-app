@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { Typography, Button, Avatar } from "@material-ui/core";
+import { Button, } from "@material-ui/core";
 import { getAuthenticatedUser } from "../../utils";
 import { getImageAPI } from "../../services";
 import { addAvatar } from "../../actions/avatarActions";
@@ -30,11 +29,12 @@ function UserAvatar(props) {
   return (
     <div className={clsx(classes.root, classes.flexRow)}>
       
-      <div className={classes.flexColumn}>
-        
+      <div className={classes.flexColumn}>        
 
         <div className={classes.flexRow}>
-          
+          <Button color="primary" size="small" onClick={props.handleLogout}>
+            Logout
+          </Button>
         </div>
       </div>
     </div>

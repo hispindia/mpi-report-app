@@ -2,11 +2,14 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Bar } from 'react-chartjs-2';
 import { GridContainer, GridItem } from '../../components/Grid';
+import  "chartjs-plugin-datalabels";
+
+import Tabular from "./tabular"
 
 const useStyles = makeStyles({
   chart: {
-    minWidth: 100,
-    maxWidth: 400
+    minWidth: 250,
+    maxWidth: 850
   },
 });
 export default function Chart(props) {
@@ -14,7 +17,7 @@ export default function Chart(props) {
   const classes = useStyles();
   let[isGenderReport, setisGenderReport] = React.useState(false);
   let[newData, setnewData] = React.useState([]);
-
+  const findMaxVal = data => Math.max(props.data);
   const legend = {
     display: true,
     position: "bottom",
@@ -31,14 +34,14 @@ export default function Chart(props) {
     datasets: [
       {
         label: 'Number of Registrations',
-        data: [12, 19, 3, 5, 2, 3],
+        data: props.data,
         backgroundColor: [
-          'rgba(255, 99, 150, 1.2)',
-          'rgba(54, 162, 235, 1.2)',
-          'rgba(255, 206, 86, 1.2)',
-          'rgba(75, 192, 192, 1.2)',
-          'rgba(153, 102, 255, 1.2)',
-          'rgba(255, 159, 64, 1.2)',
+          'rgba(255, 99, 132, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)',
+          'rgba(153, 102, 255, 0.5)',
+          'rgba(255, 159, 64, 0.5)',
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
@@ -59,25 +62,31 @@ export default function Chart(props) {
         {
           label: 'Male',
           data: props.maleData,
-          backgroundColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgb(255, 160, 255)',
         },
         {
           label: 'Female',
           data: props.femaleData,
-          backgroundColor: 'rgb(54, 162, 235)',
+          backgroundColor: 'rgb(54, 190, 255)',
         },        
       ],
     };
-    const options2 = {
+    const options2 = {      
       legend: {
         display: true,
-        position: 'left'
+        position: 'right'
     },
       scales: {
         yAxes: [
           {
             stacked: true,
             ticks: {
+              userCallback(label, index, labels) {
+                // only show if whole number
+                if (Math.floor(label) === label) {
+                    return label;
+                }
+             },
               beginAtZero: true,
             },
           },
@@ -91,27 +100,43 @@ export default function Chart(props) {
     };
     
     const options = {
+      plugins: {
+        datalabels: {
+          display: true,
+          color: "black",
+          align: "top",
+          anchor: "end",
+          font: { size: "14" }
+        }
+      },
+      legend: {
+        display: false
+      },
       scales: {
         yAxes: [
           {
             ticks: {
-              beginAtZero: true,
-            },
-          },
-        ],
+              userCallback(label, index, labels) {
+                 // only show if whole number
+                 if (Math.floor(label) === label) {
+                     return label;
+                 }
+              },
+              beginAtZero: true
+            }
+          }
+         ],
       },
-      
     };
-    
     return (
       
       <>
-      <GridContainer id="gd1">
-        
-        <GridItem item xs={6} sm={6} md={8}>
+      
+ <GridContainer>
+        <GridItem item xs={12} sm={4} md={6}>
       {!isGenderReport &&(
  
- <Bar data={data} options={options}  legend={legend}/>
+ <Bar data={data} options={options} />
  
       )}
     
@@ -121,7 +146,14 @@ export default function Chart(props) {
 />
  
  )}
- </GridItem></GridContainer>
+ </GridItem>
+ 
+ </GridContainer>
+ <GridContainer id="gd1">
+      <GridItem item xs={12} sm={4} md={6}>
+ <Tabular reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>
+ </GridItem>
+ </GridContainer>
  </>
     )
   

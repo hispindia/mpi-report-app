@@ -5,7 +5,6 @@ import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import PieChart from '@material-ui/icons/PieChart';
 import BarChart from '@material-ui/icons/BarChart';
-import BorderAll from '@material-ui/icons/BorderAll';
 import PictureAsPdf from '@material-ui/icons/PictureAsPdf';
 import Print from '@material-ui/icons/Print';
 import jsPDF from 'jspdf';
@@ -14,7 +13,6 @@ import html2canvas from "html2canvas";
 
 import Chart from "./chart";
 import Pie from "./pieChart";
-import Tabular from "./tabular"
 import { GridContainer, GridItem} from '../../components/Grid';
 import {Grid  } from "@material-ui/core";
 
@@ -31,7 +29,6 @@ export default function SimpleListMenu(props) {
     const [value, setValue] = React.useState('');
     const [isPDF, setIsPDF] = React.useState(false);
     const [isPie, setIsPie] = React.useState(false);
-    const [isTabular, setIsTabular] = React.useState(false);
     const [isPrint, setIsPrint] = React.useState(false);
   const printDocument = () => {
     html2canvas(inputRef.current).then((canvas) => {
@@ -51,15 +48,9 @@ export default function SimpleListMenu(props) {
       else if(newValue === 'pie'){
         setIsPDF(false);
         setIsPie(true);
-        setIsTabular(false);
         setIsPrint(false);
       }
-      else if(newValue === 'tabular'){
-        setIsPDF(false);
-        setIsPie(false);
-        setIsTabular(true);
-        setIsPrint(false);
-      }
+     
       else if(newValue === 'print'){
         setIsPDF(false);
         setIsPrint(true);
@@ -69,7 +60,6 @@ export default function SimpleListMenu(props) {
       else{
         setIsPDF(false);
         setIsPie(false);
-        setIsTabular(false);
         setIsPrint(false);
       }
       setValue(newValue);
@@ -80,10 +70,10 @@ export default function SimpleListMenu(props) {
   return (
     <>
     <GridContainer>
-    <GridItem>
-  <BottomNavigation  value={value} onChange={handleChange} className={classes.root}>
-    <BottomNavigationAction label="Tabular Data" value="tabular" icon={<BorderAll />} />
-    {!isPie &&(<BottomNavigationAction label="Pie Chart" value="pie" icon={<PieChart />} />)}
+    <GridItem item xs={12} sm={4} md={6}>
+  <BottomNavigation  value={value} onChange={handleChange} className={classes.Left}>
+    
+    {!isPie && props.reportName !== 'gender' &&  (<BottomNavigationAction label="Pie Chart" value="pie" icon={<PieChart />} />)}
     {isPie &&(
       <BottomNavigationAction label="Bar Chart" value="bar" icon={<BarChart />} />
     )}
@@ -95,9 +85,9 @@ export default function SimpleListMenu(props) {
 </GridContainer>
 
 <Grid id="section-to-print" ref={inputRef}>
-{!isPie && !isTabular  && (<Chart reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>)}
-{isPie && !isTabular && (<Pie reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>)}
-{!isPie && isTabular && (<Tabular reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>)}
+{!isPie   && (<Chart reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>)}
+{isPie  && (<Pie reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>)}
+
 </Grid>
 
     </>

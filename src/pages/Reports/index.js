@@ -8,9 +8,9 @@ import {
   Button,
   Paper,
 } from "@material-ui/core";
+import  "chartjs-plugin-datalabels";
 
 import { GridContainer, GridItem } from "../../components/Grid";
-import Chart from "./chart";
 import styles from "./styles";
 import "./styles.css";
 import clsx from "clsx";
@@ -41,6 +41,7 @@ function Reports() {
   const [allHosptsmale, setallHosptsmale] = React.useState([]);
   const [allHosptsfemale, setallHosptsfemale] = React.useState([]);
   let [allHospts, setallHospts] = React.useState([]);
+  let [hospitals, setHospitals] = React.useState([]);
   let [allDistricts, setallDistricts] = React.useState([]);
     var [reportType, setReportType] = React.useState('-1');
     var [districtId, setdistrictId] = React.useState([]);
@@ -76,7 +77,7 @@ function Reports() {
     
     if(!isCall){
         setisCall(true);
-        districName();
+        districtName();
     }
     if(allDistricts.length > 0){
         allDistricts = allDistricts.reduce(function(a,b){
@@ -84,6 +85,7 @@ function Reports() {
             return a;
           },[]);
     }
+  const hosList = hosptName();
   const distList = allDistricts.map((x) =>
      {var str_id = x.split("-")
     return(
@@ -215,9 +217,13 @@ function handleHospitalType(e){
     setHosName(e.target.value ) ;    
 }
 function handleDistrictType(e){
+
+    var dis = districName(e.target.value);
+
     setIsChart(false);
+    console.log(dis)
     setDisName(e.target.value ) ;
-    hosptName();    
+    
     //var str = e.target.value.split("-")
 }
 function checkValidation(){
@@ -285,38 +291,47 @@ function checkValidation(){
   }
   function hosptName() {
     let hos = [];
-    
-    if(!ishospital && (disName !== '' || disName !== 'all')){
-        var data = [];
-        for(var i=0;i<=allHospts.length-1;i++){
-            var str2 = allHospts[i].split("-")
-            if(disName === (str2[0]+"-"+str2[1])){
-                data.push(str2[2]); 
-            }
-        }
-        
-        hos = data.map((x) => { 
-            return(
-                <MenuItem key={x} value={x} >{x}</MenuItem>)
-      })
-        
-    }
+   
+      
+   
     return hos;
   }
-  function districName() {
-    if(allHospts.length > 0){
-      allHospts = allHospts.reduce(function(a,b){
-          if (a.indexOf(b) < 0 ) a.push(b);
-          return a;
-        },[]);
-    }
-    var base_url = `/onlineappointment/hospitals?country_id=1&state_id=2&district_id=`;
-    for (var y = 3; y <= 20; y++) {
-      var url = base_url + y;
-      getAPI(url).then((response) => {
+  function districtName(){
+   
+    var base_url = `/onlineappointment/locations?location_type_id=3`;
+    getAPI(base_url).then((response) => {
+      if(response.data.sessionLocation.length !== 0 )   {
+        var searchdatanew = []; 
+        //var newData = [];
+        for (let i = 0; i < response.data.sessionLocation.length; i++) {                
+            searchdatanew.push(response.data.sessionLocation);               
+           
+            let district_name = searchdatanew[0][i]['online_location_name'];
+            let district_id = searchdatanew[0][i]['online_location_id'];
+            
+            if(!districtId.includes(district_name)){
+                districtId.push(district_name);
+            }                
+            allDistricts.push(district_id+"-"+district_name); 
+        }
+      }
+  })
+  return allDistricts;
+  }
+
+  function districName(dis) {
+    let hos = [];
+    hospitals.length = 0;
+    if(!ishospital && (dis !== '-1' || dis !== 'all') ){     
+    var data = [];
+    console.log(dis);
+    var disStr = dis.split("-");
+    var base_url = `/onlineappointment/hospitals?country_id=1&state_id=2&district_id=`+disStr[0];
+    console.log(base_url);  
+    getAPI(base_url).then((response) => {
         if(response.data.sessionLocation.length !== 0 )   {
-          var searchdatanew = []; 
-          //var newData = [];
+          var searchdatanew = [];
+          var newhosNames = [] 
           for (let i = 0; i < response.data.sessionLocation.length; i++) {                
               searchdatanew.push(response.data.sessionLocation);                
               let hospval = searchdatanew[0][i]["online_hospital_name"];
@@ -324,14 +339,43 @@ function checkValidation(){
               let district_id = searchdatanew[0][i]["online_hospital_district"]['online_location_id'];
               if(!districtId.includes(district_name)){
                   districtId.push(district_name);
-              }                
-              allDistricts.push(district_id+"-"+district_name); 
-              allHospts.push(district_id+"-"+district_name+"-"+hospval );               
+              }
+              newhosNames.push(district_id+"-"+district_name+"-"+hospval);
           }
+          allHospts.length = 0;
+          allHospts.push.apply(allHospts,newhosNames);
+          setallHospts(newhosNames);
         }
+        else{
+          allHospts.length = 0;
+        }
+        console.log(allHospts)
+        if(allHospts.length > 0){
+          allHospts = allHospts.reduce(function(a,b){
+              if (a.indexOf(b) < 0 ) a.push(b);
+              return a;
+            },[]);
+        }
+    
+        for(var i=0;i<=allHospts.length-1;i++){
+            var str2 = allHospts[i].split("-")
+            if(disName === (str2[0]+"-"+str2[1])){
+                data.push(str2[2]); 
+            }
+        }
+        hos = allHospts.map((x) => { 
+          var str2 = x.split("-")
+            return(
+                <MenuItem key={str2[2]} value={str2[2]} >{str2[2]}</MenuItem>)
+      })
+      hospitals.push.apply(hospitals,hos)      
+      //setHospitals(hos);
+      console.log(hos)
     })
-  }
-  return allDistricts;
+    }
+    
+    
+    return hospitals;
   }
   function handleToDate(e){
     var tDate = e.target.value;
@@ -440,7 +484,7 @@ function handleToYear(e){
             id="hosName" onChange={handleHospitalType} disabled = {ishospital}>
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
                 <MenuItem value="all" >ALL Facilities</MenuItem>
-                {hosptName()}
+                {hospitals}
             </Select>
         </GridItem>)}
         
@@ -489,8 +533,7 @@ function handleToYear(e){
         <GridContainer>
    
             <GridItem item xs={12} sm={6} md={3}>
-            <InputLabel htmlFor="age-native-simple">Month Range</InputLabel>
-            
+            <InputLabel htmlFor="age-native-simple">Month Wise</InputLabel>            
             <TextField
             type="month" 
                 defaultValue="2021-08"
@@ -524,7 +567,8 @@ function handleToYear(e){
         </Paper>
         </form>
         {startProgress && ( <ProgressBar/>)}
-       {isChart && (<Paper className={classes.paper}  >
+       {isChart && (
+         <Paper className={classes.paper}  >
 
         <SimpleListMenu reportName={reportType} data={allHosptsData} labelName={allHosptsName} maleData={allHosptsmale} femaleData = {allHosptsfemale}/>
        
