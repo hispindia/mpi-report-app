@@ -14,6 +14,7 @@ import { GridContainer, GridItem } from "../../components/Grid";
 import styles from "./styles";
 import "./styles.css";
 import { getHispAPI } from "../../services";
+import  renderCellExpand  from "./renderCellExpand";
 
 const useStyles = makeStyles(styles);
 
@@ -87,29 +88,34 @@ export default function PatientSearch(props) {
   var [IdenErrorMsj, setIdenErrorMsj] = useState();
 
   const columns = [
-    { field: "mpiId", headerName: "MPI ID", width: 120 },
-    { field: "identifier", headerName: "Patient ID", width: 130 },
-    { field: "name", headerName: "Name", width: 120 },
+    { field: "mpiId", headerName: "MPI ID", minWidth: 120,flex: 0.6  },
+    { field: "identifier", headerName: "Patient ID", minWidth: 140,flex: 0.6  },
+    { field: "name", headerName: "Name",flex: 1 , minWidth: 150, renderCell: renderCellExpand },
     {
       field: "age",
       headerName: "Age",
       type: "number",
       width: 120,
+      flex: 0.5
     },
     {
       field: "gender",
       headerName: "Gender",
+      wrapText: true ,
       type: "number",
-      width: 130,
+      width: 120,
+      flex: 0.7
     },
     {
       field: "address",
       headerName: "Address",
       type: "string",
-      width: 130,
+      width: 170,
+      flex: 1,
+      renderCell: renderCellExpand
     },
-    { field: "phone", headerName: "Phone", width: 120 },
-    { field: "addhar", headerName: "Addhar No", width: 120 },
+    { field: "phone", headerName: "Phone", width: 120 , flex: 0.7},
+    { field: "addhar", headerName: "Addhar No", width: 120, flex: 0.7 ,renderCell: renderCellExpand},
   ];
 
   const isEnteredPressed = (charLen, event, name, eventName) => {
@@ -363,100 +369,73 @@ export default function PatientSearch(props) {
     });
   };
 
-  function lvdApproxCal(lvdValueApprox, paramLvd) {
-    let date = new Date();
-    let month = "";
-
-    if (lvdValueApprox === "LM") {
-      month = new Date().getMonth();
-      let formatprevOneMonth = new Date(date.setMonth(month - 1));
-      paramLvd =
-        "&lastvisitapprox=" +
-        new Date(formatprevOneMonth)
-          .toISOString()
-          .split("T")[0]
-          .split("-")
-          .reverse()
-          .join("-");
-    } else if (lvdValueApprox === "L6M") {
-      month = new Date().getMonth();
-      let formatprev6Month = new Date(date.setMonth(month - 6));
-      paramLvd =
-        "&lastvisitapprox=" +
-        new Date(formatprev6Month)
-          .toISOString()
-          .split("T")[0]
-          .split("-")
-          .reverse()
-          .join("-");
-    } else if (lvdValueApprox === "LY") {
-      month = new Date().getMonth();
-      let formatprev6Month = new Date(date.setMonth(month - 12));
-      paramLvd =
-        "&lastvisitapprox=" +
-        new Date(formatprev6Month)
-          .toISOString()
-          .split("T")[0]
-          .split("-")
-          .reverse()
-          .join("-");
+  function wordWrap(str, maxWidth) {
+    var newLineStr = "\n", done = false, res = '',found = false;
+    while (str.length > maxWidth) {                 
+        found = false;
+        // Inserts new line at first whitespace of the line
+        for (var i = maxWidth - 1; i >= 0; i--) {
+            if (testWhite(str.charAt(i))) {
+                res = res + [str.slice(0, i), newLineStr].join('');
+                str = str.slice(i + 1);
+                found = true;
+                break;
+            }
+        }
+        // Inserts new line at maxWidth position, the word is too long to wrap
+        if (!found) {
+            res += [str.slice(0, maxWidth), newLineStr].join('');
+            str = str.slice(maxWidth);
+        }
     }
-    return paramLvd;
-  }
+    return res + str;
+}
+
+function testWhite(x) {
+    var white = new RegExp(/^\s$/);
+    return white.test(x.charAt(0));
+};
+ 
 
   var filters = {};
   function checkData(
     param,
-    firstNameVal,
+    firstNameValue,
+    addharValue,
     phoneVal,
-    identifierVal,
-    ageVal,
-    ageRange,
-    lvd,
-    lvdValueApprox
+    identifierVal
   ) {
     var paramLvd = "";
-    paramLvd = lvdApproxCal(lvdValueApprox, paramLvd);
-    if (firstNameVal) {
-      if (firstNameVal && ageVal) {
-        param = firstNameVal + "&agerange=" + ageRange + "&age=" + ageVal;
-      } else if (firstNameVal && lvdValueApprox) {
-        param = firstNameVal + paramLvd;
-      } else if (firstNameVal && lvd) {
-        param = firstNameVal + "&lastvisitexact=" + lvd;
-      } else {
-        param = firstNameVal;
-      }
-    }
+    
     if (phoneVal) {
-      if (phoneVal && ageVal) {
-        param = phoneVal + "&agerange=" + ageRange + "&age=" + ageVal;
-      } else if (phoneVal && lvdValueApprox) {
+      if (phoneVal) {
+        param = phoneVal ;
+      } else if (phoneVal) {
         param = phoneVal + +paramLvd;
-      } else if (phoneVal && lvd) {
-        param = phoneVal + "&lastvisitapprox=" + lvd;
+      } else if (phoneVal ) {
+        param = phoneVal ;
       } else {
         param = phoneVal;
       }
     }
     if (firstNameVal && phoneVal) {
-      if (phoneVal && ageVal) {
-        param = phoneVal + "&agerange=" + ageRange + "&age=" + ageVal;
-      } else if (phoneVal && lvdValueApprox) {
+      if (phoneVal) {
+        param = phoneVal ;
+      } else if (phoneVal) {
         param = phoneVal + paramLvd;
-      } else if (phoneVal && lvd) {
-        param = phoneVal + "&lastvisitapprox=" + lvd;
+      } else if (phoneVal) {
+        param = phoneVal;
       } else {
         param = phoneVal;
       }
     }
     if (identifierVal) {
-      if (identifierVal && ageVal) {
-        param = identifierVal + "&agerange=" + ageRange + "&age=" + ageVal;
-      } else if (identifierVal && lvdValueApprox) {
+      if (identifierVal ) {
+        param = identifierVal ;
+      } else if (identifierVal ) {
         param = identifierVal + paramLvd;
-      } else if (identifierVal && lvd) {
-        param = identifierVal + "&lastvisitapprox=" + lvd;
+      } else if (identifierVal) {
+        param = identifierVal ;
       } else {
         param = identifierVal;
       }
@@ -467,17 +446,20 @@ export default function PatientSearch(props) {
 
   const searchOnKey = (event, name, eventName) => {
     var searchValue = event.target.value;
-
     if (name === "firstName") {
+      searchValue = searchValue.replace(/[&\/\\#,+()$~%.'":@*?<>{}]/g, '')
       setfirstName(searchValue);
     }
     if (name === "phone") {
+      searchValue = searchValue.replace(/[&\/\\#,+()$~%.'":@*?<>{}]/g, '')
       setphone(searchValue);
     }
     if (name === "addhar") {
+      searchValue = searchValue.replace(/[&\/\\#,+()$~%.'":@*?<>{}]/g, '')
       setaddhar(searchValue);
     }
     if (name === "identifier") {
+      searchValue = searchValue.replace(/[&\/\\#,+()$~%.'":@*?<>{}]/g, '')
       setidentifier(searchValue);
     }
 
@@ -502,6 +484,7 @@ export default function PatientSearch(props) {
       setLoading(true);
       setapihit(false);
 
+      
       let searchDataAlready = searchData;
 
       let isDataAlready = false;
@@ -541,7 +524,6 @@ export default function PatientSearch(props) {
             setnameData(false);
             setphoneData(false);
             setaddharData(false);
-
             getHispAPI(`/patient_search?name=${param}`)
               .then((response) => {
                 setapihit(true);
@@ -683,18 +665,35 @@ export default function PatientSearch(props) {
                 let genval = searchdatanew[0][i]["gender"];
                 let ageval = searchdatanew[0][i]["age"];
                 if (searchdatanew[0][i]["address"]) {
-                  let addr1 = searchdatanew[0][i]["address"]["Address1"];
-                  let addr2 = searchdatanew[0][i]["address"]["Address2"];
-                  let district = searchdatanew[0][i]["address"]["City Village"];
-                  let country = searchdatanew[0][i]["address"]["Country"];
-                  let pincode = searchdatanew[0][i]["address"]["Postal Code"];
-                  let statecode =
-                    searchdatanew[0][i]["address"]["State Province"];
-                  // let addr = ho_no + " " + district + " - " + statecode + " " + country + " " + pincode
-                  let addr = district + " - " + statecode;
-                  if (addr !== "undefined - undefined") {
-                    addressrarr.push(addr);
+                  let addr1 = '';
+                  let addr2 = '';
+                  let district = '';
+                  let country = '';
+                  let pincode = '';
+                  let statecode = '';
+                  if(searchdatanew[0][i]["address"]["Address1"]){
+                    addr1 = searchdatanew[0][i]["address"]["Address1"];
                   }
+                  if(searchdatanew[0][i]["address"]["Address2"]){
+                    addr2 = searchdatanew[0][i]["address"]["Address1"];
+                  }
+                  if(searchdatanew[0][i]["address"]["City Village"]){
+                    district = searchdatanew[0][i]["address"]["City Village"];
+                  }
+                  if(searchdatanew[0][i]["address"]["Country"]){
+                    country = searchdatanew[0][i]["address"]["Country"];
+                  }
+                  if(searchdatanew[0][i]["address"]["Postal Code"]){
+                    pincode = searchdatanew[0][i]["address"]["Postal Code"];
+                  }
+                  if(searchdatanew[0][i]["address"]["State Province"]){
+                    statecode = searchdatanew[0][i]["address"]["State Province"];
+                  }
+
+                  let addr =addr1+ " "+addr2 + " " + district + "  " + statecode + " " + country + " " + pincode;
+                  addr = wordWrap(addr, 10);
+                  addressrarr.push(addr);
+
                 }
                 if (searchdatanew[0][i]["person_attributes"]) {
                   phoneNo =
@@ -980,12 +979,12 @@ export default function PatientSearch(props) {
       {isDataPresent && (
         <Paper className={classes.paper} style={{ height: "50vh" }}>
           <DataGrid
+            wrap
             rowHeight={40}
-            wrap="wrap"
+            autoHeight ={false}
             rows={searchData}
             columns={columns}
             pageSize={10}
-            density="standard"
           />
         </Paper>
       )}

@@ -26,7 +26,10 @@ function SideBar(props) {
   function activeRoute(routeName) {
     return window.location.href.indexOf(routeName) > -1 ? true : false;
   }
-
+  window.addEventListener("resize", () => {
+		handleDrawer();
+});
+ 
   React.useEffect(() => {
     const node = loadCSS(
       "https://use.fontawesome.com/releases/v5.12.0/css/all.css",

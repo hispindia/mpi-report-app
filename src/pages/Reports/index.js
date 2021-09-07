@@ -59,16 +59,25 @@ function Reports() {
 
     var frommonth = '';
     var tomonth = '';
+    var cudate = '';
+    var monthWise = '';
     if((startDate.getMonth()) < 10){
         frommonth = "0"+(startDate.getMonth());
-        tomonth =  "0"+(startDate.getMonth()+1)
+        tomonth =  "0"+(startDate.getMonth()+1);
+    }else{
+      frommonth = startDate.getMonth();
+      tomonth =  (startDate.getMonth()+1);
     }
+    if((startDate.getDate()) < 10){      cudate = "0"+(startDate.getDate());
+    }else{      cudate = startDate.getDate();    }
  
-    var sDate = startDate.getFullYear()+"-"+frommonth+"-"+startDate.getDate();
-    var eDate = startDate.getFullYear() +"-"+ tomonth +"-"+ startDate.getDate();
+    var sDate = startDate.getFullYear()+"-"+frommonth+"-"+cudate;
+    var eDate = startDate.getFullYear() +"-"+ tomonth +"-"+ cudate;
+
+    monthWise = startDate.getFullYear()+"-"+tomonth;
 
     let maxOffset = 10;
-    let thisYear = (new Date()).getFullYear();
+    let thisYear = (new Date()).getFullYear()+1;
     let allYears = [];
     for(let x = 0; x <= maxOffset; x++) {
         allYears.push(thisYear - x)
@@ -195,20 +204,58 @@ function Reports() {
         setisAllReport(true) ;
         setisDistrict(false);
         setishospital(false) ;
+        setIsMonthOpened(false);
+        setIsDateOpened(false);
+        setIsYearOpened(false);
     }
     else if(e.target.value === 'district'){
         setisDistrict(true);
-        setishospital(false) ;        
+        setishospital(false) ; 
+        setisAllReport(false) ;
+        if(dateRange !== '-1'){
+          if(dateRange === '31days'){
+            setIsDateOpened(true);
+          }
+          if(dateRange === 'month'){
+            setIsMonthOpened(true);
+          }
+          if(dateRange === 'year'){
+            setIsYearOpened(true);
+          }
+        }     
     }
     else if(e.target.value === 'hospital'){
         setHosName('all');
         setishospital(true) ;
         setisDistrict(false);
+        setisAllReport(false) ;
+        if(dateRange !== '-1'){
+          if(dateRange === '31days'){
+            setIsDateOpened(true);
+          }
+          if(dateRange === 'month'){
+            setIsMonthOpened(true);
+          }
+          if(dateRange === 'year'){
+            setIsYearOpened(true);
+          }
+        }   
     }
     else{
         setisDistrict(false);
         setishospital(false) ;
         setisAllReport(false) ;
+        if(dateRange !== '-1'){
+          if(dateRange === '31days'){
+            setIsDateOpened(true);
+          }
+          if(dateRange === 'month'){
+            setIsMonthOpened(true);
+          }
+          if(dateRange === 'year'){
+            setIsYearOpened(true);
+          }
+        }
 
     }
 }
@@ -228,8 +275,6 @@ function handleDistrictType(e){
 }
 function checkValidation(){
   var valid = false;
-  var stDate = new Date(toDate);
-  var enDate = new Date(fromDate); 
  if(reportType === '-1') {
     alert("Please select Report");
     return false;
@@ -244,10 +289,6 @@ function checkValidation(){
  }
  if((reportType !== 'daily' ) && dateRange === ""){
     alert("Please select Date Range");
-    return false;
- }
- if(stDate.getTime() > enDate.getTime()){
-    alert("Please select Valid Dates");
     return false;
  }
  else{
@@ -291,13 +332,9 @@ function checkValidation(){
   }
   function hosptName() {
     let hos = [];
-   
-      
-   
     return hos;
   }
   function districtName(){
-   
     var base_url = `/onlineappointment/locations?location_type_id=3`;
     getAPI(base_url).then((response) => {
       if(response.data.sessionLocation.length !== 0 )   {
@@ -326,6 +363,7 @@ function checkValidation(){
     var data = [];
     console.log(dis);
     var disStr = dis.split("-");
+    if(disStr[0] !== 'all'){
     var base_url = `/onlineappointment/hospitals?country_id=1&state_id=2&district_id=`+disStr[0];
     console.log(base_url);  
     getAPI(base_url).then((response) => {
@@ -373,6 +411,7 @@ function checkValidation(){
       console.log(hos)
     })
     }
+    }
     
     
     return hospitals;
@@ -408,7 +447,7 @@ function handleToMonth(e){
 }
 function handleToYear(e){
     var ydate = e.target.value;
-    fromDate = "1-3-"(ydate-1);
+    fromDate = "1-3-"+(ydate-1);
     toDate = "30-4-"+ydate;
     setfromDate(fromDate);
     settoDate(toDate);
@@ -440,9 +479,10 @@ function handleToYear(e){
         settoDate(toDate);
         return setIsMonthOpened((wasOpened) => !wasOpened);
       case "year":
-        var str = eDate.split("-");
-        fromDate = "01-03-"(str[0]-1);
-        toDate = "30-04-"+str[0];
+        var yr = eDate.split("-");
+        //alert(yr[0])
+        fromDate = "01-03-"+(yr[0]-1);
+        toDate = "30-04-"+yr[0];
         setfromDate(fromDate);
         settoDate(toDate);
         return setIsYearOpened((wasOpened) => !wasOpened);
@@ -459,7 +499,9 @@ function handleToYear(e){
         <GridContainer>
         <GridItem item xs={12} sm={6} md={3}>
         <InputLabel htmlFor="age-native-simple">Report Type</InputLabel>
-        <Select defaultValue="-1" className={classes.field}
+        <Select variant="outlined" 
+                margin="dense"
+        fullWidth defaultValue="-1" className={classes.field}
         labelId="label" id="reportType" label="Report Type" onChange={handleReportType} >
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
                 <MenuItem value="daily">Daily Activity Report</MenuItem>
@@ -470,7 +512,9 @@ function handleToYear(e){
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">District Name</InputLabel>
-            <Select defaultValue="-1" className={classes.field}
+            <Select variant="outlined" 
+                margin="dense"
+                fullWidth defaultValue="-1" className={classes.field}
             id="disName" onChange={handleDistrictType} >
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
                 {!ishospital &&(<MenuItem value="all" >ALL District</MenuItem>)}
@@ -480,7 +524,9 @@ function handleToYear(e){
         {!isdistrict &&(
             <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">Health Facility Name</InputLabel>
-            <Select defaultValue={ishospital ? "all":"-1"} className={classes.field}
+            <Select variant="outlined" 
+                margin="dense"
+                fullWidth defaultValue={ishospital ? "all":"-1"} className={classes.field}
             id="hosName" onChange={handleHospitalType} disabled = {ishospital}>
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
                 <MenuItem value="all" >ALL Facilities</MenuItem>
@@ -490,7 +536,9 @@ function handleToYear(e){
         
         <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">Date Range</InputLabel>
-            <Select label="Date Range" defaultValue="-1" onChange={handleChange} disabled = {isAllReport} className={classes.field}>
+            <Select variant="outlined" 
+                margin="dense"
+                fullWidth label="Date Range" defaultValue="-1" onChange={handleChange} disabled = {isAllReport} className={classes.field}>
                 <MenuItem value="-1" disabled>Please Select</MenuItem>
                 <MenuItem value="31days">Date Wise</MenuItem>
                 <MenuItem value="month">Month Wise</MenuItem>
@@ -498,15 +546,18 @@ function handleToYear(e){
             </Select>
         </GridItem>
         </GridContainer>
-            <br/>
             {isDateOpened && !isAllReport && (
         <GridContainer id="gd1">
-        
-            <GridItem item xs={12} sm={3} md={3}>
+        <br/>
+            <GridItem item xs={12} sm={6} md={3}>
+            <InputLabel htmlFor="age-native-simple">From Date</InputLabel>
         <TextField
+        variant="outlined"
+                fullWidth                
+                margin="dense"
                 id="date"
-                label="From Date"
                 type="date"
+                className={classes.field}
                 defaultValue={sDate}
                 onChange={handleFromDate}
                 inputProps={{ max: eDate }}
@@ -516,10 +567,14 @@ function handleToYear(e){
             />
             </GridItem>
             <GridItem item xs={12} sm={6} md={3}>
+            <InputLabel htmlFor="age-native-simple">To Date</InputLabel>
             <TextField
+            variant="outlined"
+                fullWidth
+                margin="dense"
                 id="date"
-                label="To Date"
                 type="date"
+                className={classes.field}
                 defaultValue={eDate} 
                 inputProps={{ max: eDate }}               
                 onChange={handleToDate}
@@ -530,13 +585,18 @@ function handleToYear(e){
             </GridItem>
         </GridContainer>)}
         {isMonthOpened && (
+          
         <GridContainer>
-   
+        <br/>
             <GridItem item xs={12} sm={6} md={3}>
-            <InputLabel htmlFor="age-native-simple">Month Wise</InputLabel>            
+            <InputLabel htmlFor="age-native-simple">Month Wise</InputLabel>        
             <TextField
+            variant="outlined"
+                fullWidth   
+                margin="dense"             
             type="month" 
-                defaultValue="2021-08"
+            className={classes.field}
+                defaultValue={monthWise}
                 onChange={handleToMonth}    
                 />
             </GridItem>
@@ -546,20 +606,23 @@ function handleToYear(e){
         <GridContainer>
         <GridItem item xs={12} sm={6} md={3}>
         <InputLabel htmlFor="age-native-simple">Financial Year</InputLabel>
-        <Select label="Financial Year" defaultValue="-1" onChange={handleToYear}>
+        <Select
+        variant="outlined"
+                fullWidth
+                margin="dense"
+         label="Financial Year" defaultValue="-1" onChange={handleToYear} className={classes.field}>
         <MenuItem value="-1" disabled>Please Select</MenuItem>
                 {yearList}
          </Select>           
         </GridItem>
         </GridContainer>
-        )}<br/>
+        )}
         <GridContainer>
         <GridItem item xs={12} sm={6} md={3}>
         <Button className={clsx(classes.button, classes.field)} variant="contained" color="primary" 
          onClick={(e) => showPieChart(e)}
        id="show" >  Show Result</Button>
-        <Button className={clsx(classes.button, classes.field)} variant="contained"
-         color="secondary" 
+        <Button className={clsx(classes.button, classes.field)} variant="contained"          
          onClick={(e) => resetAll(e)}
          >  Reset</Button>
 </GridItem>

@@ -34,7 +34,7 @@ export default function SimpleListMenu(props) {
     html2canvas(inputRef.current).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF();
-      pdf.addImage(imgData, "JPEG", 0, 0);
+      pdf.addImage(imgData, "JPEG", 0, 0,230,200);
       pdf.save(props.reportName+"_report.pdf");
     });
   };

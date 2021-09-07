@@ -9,9 +9,9 @@ import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 200,
-    maxWidth: 680,
-    padding: 8
+    marginTop: 80,
+    padding: 2,
+    border: 2,
   },
 });
 
@@ -54,7 +54,7 @@ export default function DenseTable(props) {
     
   return (
     <TableContainer className={classes.table}>
-      <Table size="medium" aria-label="a dense table">
+      <Table size="large" aria-label="a dense table">
         <TableHead>
         {report_name ==='gender' && (
           <TableRow>
