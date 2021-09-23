@@ -545,10 +545,8 @@ function handleToYear(e){
                 <MenuItem value="year">Financial Year</MenuItem>
             </Select>
         </GridItem>
-        </GridContainer>
             {isDateOpened && !isAllReport && (
-        <GridContainer id="gd1">
-        <br/>
+        <>
             <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">From Date</InputLabel>
         <TextField
@@ -582,12 +580,10 @@ function handleToYear(e){
                 shrink: true,
                 }}
             />
-            </GridItem>
-        </GridContainer>)}
+            </GridItem></>
+        )}
         {isMonthOpened && (
-          
-        <GridContainer>
-        <br/>
+         
             <GridItem item xs={12} sm={6} md={3}>
             <InputLabel htmlFor="age-native-simple">Month Wise</InputLabel>        
             <TextField
@@ -600,10 +596,9 @@ function handleToYear(e){
                 onChange={handleToMonth}    
                 />
             </GridItem>
-        </GridContainer>
+        
         )}
         {isYearOpened && (
-        <GridContainer>
         <GridItem item xs={12} sm={6} md={3}>
         <InputLabel htmlFor="age-native-simple">Financial Year</InputLabel>
         <Select
@@ -615,8 +610,8 @@ function handleToYear(e){
                 {yearList}
          </Select>           
         </GridItem>
-        </GridContainer>
         )}
+        </GridContainer>
         <GridContainer>
         <GridItem item xs={12} sm={6} md={3}>
         <Button className={clsx(classes.button, classes.field)} variant="contained" color="primary" 
@@ -625,13 +620,13 @@ function handleToYear(e){
         <Button className={clsx(classes.button, classes.field)} variant="contained"          
          onClick={(e) => resetAll(e)}
          >  Reset</Button>
-</GridItem>
+        </GridItem>
         </GridContainer>
         </Paper>
         </form>
         {startProgress && ( <ProgressBar/>)}
        {isChart && (
-         <Paper className={classes.paper}  >
+         <Paper className={classes.paper} >
 
         <SimpleListMenu reportName={reportType} data={allHosptsData} labelName={allHosptsName} maleData={allHosptsmale} femaleData = {allHosptsfemale}/>
        

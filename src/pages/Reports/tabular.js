@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,13 +7,26 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-const useStyles = makeStyles({
-  table: {
-    marginTop: 80,
-    padding: 2,
-    border: 2,
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: "#00acc1",
+    color: theme.palette.common.white,
+    padding: 8,
   },
-});
+  body: {
+    fontSize: 14,    
+    padding: 8,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+  
+}))(TableRow);
 
 function createData(name, data) {
   return { name, data };
@@ -25,7 +38,6 @@ function createGenderData(name,male,female){
 let rows = [];
 
 export default function DenseTable(props) {
-  const classes = useStyles();
   const data = props.data;
   const name = props.labelName;
   const report_name = props.reportName;
@@ -53,44 +65,44 @@ export default function DenseTable(props) {
   }
     
   return (
-    <TableContainer className={classes.table}>
+    <TableContainer >
       <Table size="large" aria-label="a dense table">
         <TableHead>
         {report_name ==='gender' && (
           <TableRow>
-            <TableCell>Name</TableCell>
+            <StyledTableCell>Name</StyledTableCell>
             
-              <TableCell>Male</TableCell>
-              <TableCell>Female</TableCell>
+              <StyledTableCell>Male</StyledTableCell>
+              <StyledTableCell>Female</StyledTableCell>
           </TableRow>)}
           {report_name !=='gender' && (
             <TableRow>
-            <TableCell>Name</TableCell>            
-              <TableCell>Data</TableCell>
+            <StyledTableCell>Name</StyledTableCell>            
+              <StyledTableCell>Data</StyledTableCell>
           </TableRow> 
           )}
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell >
+            <StyledTableRow key={index}>
+              <StyledTableCell >
                     {(row.name === 'Total' && 
                     <b>{row.name}</b>
                     )}
                     {(row.name !== 'Total' && row.name)}
-              </TableCell>
+              </StyledTableCell>
               {report_name !=='gender' && (
-                <TableCell >
+                <StyledTableCell >
                     {row.data}
-              </TableCell>
+              </StyledTableCell>
               )} 
               {report_name ==='gender' && (
                 <>
-                <TableCell >{row.male}</TableCell>
-                <TableCell >{row.female}</TableCell>
+                <StyledTableCell >{row.male}</StyledTableCell>
+                <StyledTableCell >{row.female}</StyledTableCell>
                 </>
               )}                
-            </TableRow>
+            </StyledTableRow>
           ))}
         </TableBody>
       </Table>
