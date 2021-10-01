@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { GridContainer, GridItem } from '../../components/Grid';
 import  "chartjs-plugin-datalabels";
 
@@ -24,42 +24,32 @@ export default function Chart(props) {
       {
         label: 'Number of Registrations',
         data: props.data,
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 92, 0.5)',
-          'rgba(153, 102, 255, 0.5)',
-          'rgba(255, 159, 64, 0.5)',
-          'rgba(255, 19, 10, 0.5)',
-          'rgba(59, 109, 100, 0.5)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
+        fill: false,
+        backgroundColor:
+          'rgba(255, 99, 132, 0.5)',        
+        borderColor: 
           'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(255, 19, 10, 1)',
-          'rgba(59, 109, 100, 1)',
-        ],
         borderWidth: 1,
       },
     ],
   };
   
     const groupData = {      
-      labels: props.labelName,     
+      labels: props.labelName, 
       datasets: [
         {
           label: 'Male',
           data: props.maleData,
-          backgroundColor: 'rgba(255, 99, 132, 0.4)',
+          fill: false,
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgba(255, 99, 132, 0.5)',
         },
         {
           label: 'Female',
-          data: props.femaleData,
-          backgroundColor: 'rgba(54, 162, 235, 0.4)',
+          data: props.femaleData, 
+          fill: false, 
+          backgroundColor: 'rgb(55, 59, 190)',
+          borderColor: 'rgba(55, 59, 190, 0.5)',
         },        
       ],
     };
@@ -132,13 +122,13 @@ export default function Chart(props) {
         <GridItem item xs={12} md={6} sm={6}>
       {!isGenderReport &&(
  
- <Bar data={data} options={options} minWidth="100" height="170"/>
+ <Line data={data} options={options} minWidth="100" height="170"/>
  
       )}
     
  {isGenderReport && (
   
- <Bar data={groupData} options={options2} minWidth={100} height={170}/>
+ <Line data={groupData} options={options2} minWidth={100} height={170}/>
  
  )}
  </GridItem>

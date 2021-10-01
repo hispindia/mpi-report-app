@@ -1,7 +1,7 @@
 import React from "react";
 
 import { GridContainer, GridItem } from "../../components/Grid";
-import { Pie} from 'react-chartjs-2';
+import { Doughnut} from 'react-chartjs-2';
 
 
 import Tabular from "./tabular"
@@ -11,7 +11,7 @@ export default function Chart(props) {
   const options = {
     legend: {
         display: true,
-        position: 'bottom',
+        position: 'right',
         plugins: {
           datalabels: {
             display: true,
@@ -78,7 +78,7 @@ export default function Chart(props) {
       <>      
  <GridContainer>
         <GridItem item xs={12} md={6} sm={6}>
-            <Pie data={state} options={options}/>
+            <Doughnut data={state} options={options}/>
         </GridItem> 
         <GridItem item xs={12} md={6} sm={6}>
             <Tabular reportName={props.reportName} data={props.data} labelName={props.labelName} maleData={props.maleData} femaleData = {props.femaleData}/>
