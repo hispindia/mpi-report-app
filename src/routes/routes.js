@@ -20,7 +20,7 @@ export const appRoutes = [
   },
   {
     path: "/patient-search",
-    title: "Patient Search",
+    title: "Master Patient Index",
     roles: [
       "*",
     ],
