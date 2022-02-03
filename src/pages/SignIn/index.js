@@ -11,11 +11,11 @@ import {
   Checkbox,
   Link,
   Typography,
+  makeStyles,
   Grid,
   Paper,
   CircularProgress,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Alert } from "@material-ui/lab";
 import Footer from "../../components/Footer";
@@ -26,8 +26,8 @@ const useStyles = makeStyles(styles);
 export default function SignIn(props) {
   let { location, history } = props;
   const [loginDetails, setLoginDetails] = useState({
-    username: "samta",
-    password: "Samta123",
+    username: "",
+    password: "",
     remember: false,
   });
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function SignIn(props) {
     if (validateForm()) {
       setLoading(true);
       getAPI(
-        "/session",
+        "/loginaudit",
         decrypt(
           encrypt(
             `${loginDetails.username}:${loginDetails.password}`,

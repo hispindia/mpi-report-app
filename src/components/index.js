@@ -4,7 +4,15 @@ import Footer from "./Footer";
 import SideBar from "./SideBar";
 import UserAvatar from "./UserAvatar";
 import { GridContainer, GridItem } from "./Grid";
-
+import {
+  Danger,
+  Warning,
+  Info,
+  Muted,
+  Primary,
+  Quote,
+  Success,
+} from "./Typography";
 
 import {
   Card,
@@ -28,5 +36,12 @@ export {
   GridContainer,
   GridItem,
   SideBar,
+  Warning,
+  Info,
+  Primary,
+  Quote,
+  Danger,
+  Muted,
+  Success,
   UserAvatar,
 };

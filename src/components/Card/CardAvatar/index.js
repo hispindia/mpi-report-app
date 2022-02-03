@@ -2,8 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
+import { Button, makeStyles } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { getAuthenticatedUser } from "../../../utils";
 import { postAPI } from "../../../services";

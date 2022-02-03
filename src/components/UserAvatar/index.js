@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Typography, Button, makeStyles, Avatar } from "@material-ui/core";
 import { getAuthenticatedUser } from "../../utils";
 import { getImageAPI } from "../../services";
 import { addAvatar } from "../../actions/avatarActions";
-import { makeStyles } from '@material-ui/core/styles'
 
 import styles from "./styles";
 
@@ -28,10 +28,21 @@ function UserAvatar(props) {
   }, []);
   return (
     <div className={clsx(classes.root, classes.flexRow)}>
-      
-      <div className={classes.flexColumn}>        
+      <Avatar src={avatar} alt={getAuthenticatedUser().display}>
+        {getAuthenticatedUser().display.slice(0, 1).toUpperCase()}
+      </Avatar>
+      <div className={classes.flexColumn}>
+        <Typography component="h6">{getAuthenticatedUser().display}</Typography>
 
         <div className={classes.flexRow}>
+          <Button
+            color="primary"
+            size="small"
+            component={Link}
+            to="/app/user-profile"
+          >
+            Profile
+          </Button>
           <Button color="primary" size="small" onClick={props.handleLogout}>
             Logout
           </Button>

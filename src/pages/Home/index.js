@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {  Icon, Button } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, Icon, Button } from "@material-ui/core";
 import { appRoutes } from "../../routes/index";
 import { hasAccess } from "../../utils";
 import { GridContainer, GridItem } from "../../components/Grid";
@@ -25,7 +24,7 @@ function Home() {
                     {typeof prop.icon === "string" ? (
                       <Icon className={prop.icon} style={{ width: "1.2em" }} />
                     ) : (
-                      <prop.icon/>
+                      <prop.icon />
                     )}
                   </CardIcon>
                   <h4 className={classes.cardTitle}>{prop.title}</h4>

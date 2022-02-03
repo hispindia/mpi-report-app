@@ -5,8 +5,8 @@ import {
   Toolbar,
   IconButton,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
 import MenuIcon from "@material-ui/icons/Menu";
 import UserAvatar from "../UserAvatar";
 
@@ -21,7 +21,11 @@ function AppBar(props) {
   const appTitle = () => {
     let title;
     routes.map((prop) => {
-      if (window.location.href.indexOf(prop.path) !== -1) {
+      var proppath = prop.path;
+      if (proppath.indexOf(":") !== -1) {
+        proppath = proppath.substring(0, proppath.indexOf(':'));
+      }
+      if (window.location.href.indexOf(proppath) !== -1) {
         title = prop.title;
       }
       return null;

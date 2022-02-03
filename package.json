@@ -2,6 +2,7 @@
     "name": "hims-frontend",
     "version": "0.1.0",
     "private": true,
+    "homepage": "mpi-report",
     "dependencies": {
         "@devexpress/dx-react-core": "^2.7.5",
         "@devexpress/dx-react-scheduler": "^2.7.5",
@@ -38,6 +39,7 @@
         "react-scripts": "4.0.1",
         "react-to-print": "^2.12.6",
         "redux": "^4.1.0",
+        "redux-thunk": "^2.3.0",
         "redux-logger": "^3.0.6",
         "rrule": "^2.6.8"
     },

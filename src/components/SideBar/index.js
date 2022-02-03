@@ -7,11 +7,11 @@ import {
   Divider,
   List,
   IconButton,
+  makeStyles,
   Icon,
   ListItemText,
   MenuItem,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
 import MenuIcon from "@material-ui/icons/Menu";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import styles from "./styles";
@@ -26,7 +26,7 @@ function SideBar(props) {
   function activeRoute(routeName) {
     return window.location.href.indexOf(routeName) > -1 ? true : false;
   }
- 
+
   React.useEffect(() => {
     const node = loadCSS(
       "https://use.fontawesome.com/releases/v5.12.0/css/all.css",
@@ -39,7 +39,7 @@ function SideBar(props) {
   }, []);
 
   var links = (
-    <List xs={12} sm={6} md={3}>
+    <List>
       {routes.map((prop, key) => {
         if (prop.visibleOnSidebar && hasAccess(prop.roles)) {
           let listItemClasses = clsx({

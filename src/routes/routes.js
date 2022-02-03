@@ -1,7 +1,8 @@
 import {
   Home,
   PatientSearch,
-  Reports
+  Reports,
+  UserProfile
   
 } from "../pages";
 
@@ -16,6 +17,15 @@ export const appRoutes = [
     visibleOnSidebar: true,
     icon: "fa fa-home",
     component: Home,
+    layout: "/app",
+  },
+  {
+    path: "/user-profile",
+    title: "User Profile",
+    roles: ["*"],
+    visibleOnSidebar: false,
+    icon: "",
+    component: UserProfile,
     layout: "/app",
   },
   {

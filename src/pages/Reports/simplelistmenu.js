@@ -49,7 +49,6 @@ export default function SimpleListMenu(props) {
       const pdf = new jsPDF('landscape');
       pdf.addImage(imgData, "PDF", 0, 0,imgWidth,imgHeight);
       pdf.save(props.reportName+"_report.pdf");
-     
       
     });
   };
