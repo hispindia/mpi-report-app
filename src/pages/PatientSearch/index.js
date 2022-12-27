@@ -14,7 +14,7 @@ import { GridContainer, GridItem } from "../../components/Grid";
 import styles from "./styles";
 import "./styles.css";
 import { getHispAPI } from "../../services";
-import  renderCellExpand  from "./renderCellExpand";
+import renderCellExpand from "./renderCellExpand";
 
 const useStyles = makeStyles(styles);
 
@@ -87,10 +87,12 @@ export default function PatientSearch(props) {
   var [NameErrorMsj, setNameErrorMsj] = useState();
   var [IdenErrorMsj, setIdenErrorMsj] = useState();
 
+  console.log('phone>>>', phone)
+
   const columns = [
-    { field: "mpiId", headerName: "MPI ID", minWidth: 120,flex: 0.6  },
-    { field: "identifier", headerName: "Patient ID", minWidth: 140,flex: 0.6  },
-    { field: "name", headerName: "Name",flex: 1 , minWidth: 150, renderCell: renderCellExpand },
+    // { field: "identifier", headerName: "Patient ID", minWidth: 140,flex: 0.6  },
+    { field: "identifier", headerName: "MPI ID", minWidth: 120, flex: 0.6 },
+    { field: "name", headerName: "Name", flex: 1, minWidth: 150, renderCell: renderCellExpand },
     {
       field: "age",
       headerName: "Age",
@@ -101,7 +103,7 @@ export default function PatientSearch(props) {
     {
       field: "gender",
       headerName: "Gender",
-      wrapText: true ,
+      wrapText: true,
       type: "number",
       width: 120,
       flex: 0.7
@@ -114,8 +116,8 @@ export default function PatientSearch(props) {
       flex: 1,
       renderCell: renderCellExpand
     },
-    { field: "phone", headerName: "Phone", width: 120 , flex: 0.7},
-    { field: "addhar", headerName: "Addhar No", width: 120, flex: 0.7 ,renderCell: renderCellExpand},
+    { field: "phone", headerName: "Phone", width: 120, flex: 0.7 },
+    { field: "addhar", headerName: "Addhar No", width: 120, flex: 0.7, renderCell: renderCellExpand },
   ];
 
   const isEnteredPressed = (charLen, event, name, eventName) => {
@@ -370,74 +372,102 @@ export default function PatientSearch(props) {
   };
 
   function wordWrap(str, maxWidth) {
-    var newLineStr = "\n", done = false, res = '',found = false;
-    while (str.length > maxWidth) {                 
-        found = false;
-        // Inserts new line at first whitespace of the line
-        for (var i = maxWidth - 1; i >= 0; i--) {
-            if (testWhite(str.charAt(i))) {
-                res = res + [str.slice(0, i), newLineStr].join('');
-                str = str.slice(i + 1);
-                found = true;
-                break;
-            }
+    var newLineStr = "\n", done = false, res = '', found = false;
+    while (str.length > maxWidth) {
+      found = false;
+      // Inserts new line at first whitespace of the line
+      for (var i = maxWidth - 1; i >= 0; i--) {
+        if (testWhite(str.charAt(i))) {
+          res = res + [str.slice(0, i), newLineStr].join('');
+          str = str.slice(i + 1);
+          found = true;
+          break;
         }
-        // Inserts new line at maxWidth position, the word is too long to wrap
-        if (!found) {
-            res += [str.slice(0, maxWidth), newLineStr].join('');
-            str = str.slice(maxWidth);
-        }
+      }
+      // Inserts new line at maxWidth position, the word is too long to wrap
+      if (!found) {
+        res += [str.slice(0, maxWidth), newLineStr].join('');
+        str = str.slice(maxWidth);
+      }
     }
     return res + str;
-}
+  }
 
-function testWhite(x) {
+  function testWhite(x) {
     var white = new RegExp(/^\s$/);
     return white.test(x.charAt(0));
-};
- 
+  };
+
 
   var filters = {};
   function checkData(
     param,
     firstNameValue,
     addharValue,
-    phoneVal,
-    identifierVal
+    phoneValue,
+    identifierValue
   ) {
+    // console.log('param>>>', param)
+    // console.log('addharValue>>>', addharValue)
+    // console.log('phoneValue>>>', phoneValue)
+    // console.log('identifierVal>>>', phoneValue)
+
     var paramLvd = "";
-    
-    if (phoneVal) {
-      if (phoneVal) {
-        param = phoneVal ;
-      } else if (phoneVal) {
-        param = phoneVal + +paramLvd;
-      } else if (phoneVal ) {
-        param = phoneVal ;
+
+    if (phoneValue) {
+      if (phoneValue) {
+        param = phoneValue;
+      } else if (phoneValue) {
+        param = phoneValue + +paramLvd;
+      } else if (phoneValue) {
+        param = phoneValue;
       } else {
-        param = phoneVal;
+        param = phoneValue;
       }
     }
-    if (firstNameVal && phoneVal) {
-      if (phoneVal) {
-        param = phoneVal ;
-      } else if (phoneVal) {
-        param = phoneVal + paramLvd;
-      } else if (phoneVal) {
-        param = phoneVal;
+    if (addharValue) {
+      if (addharValue) {
+        param = addharValue;
+      } else if (addharValue) {
+        param = addharValue + +paramLvd;
+      } else if (addharValue) {
+        param = addharValue;
       } else {
-        param = phoneVal;
+        param = addharValue;
       }
     }
-    if (identifierVal) {
-      if (identifierVal ) {
-        param = identifierVal ;
-      } else if (identifierVal ) {
-        param = identifierVal + paramLvd;
-      } else if (identifierVal) {
-        param = identifierVal ;
+    if (firstNameValue) {
+      if (firstNameValue) {
+        param = firstNameValue;
+      } else if (firstNameValue) {
+        param = firstNameValue + +paramLvd;
+      } else if (firstNameValue) {
+        param = firstNameValue;
       } else {
-        param = identifierVal;
+        param = firstNameValue;
+      }
+    }
+
+    if (firstNameVal && phoneValue) {
+      if (phoneValue) {
+        param = phoneValue;
+      } else if (phoneValue) {
+        param = phoneValue + paramLvd;
+      } else if (phoneValue) {
+        param = phoneValue;
+      } else {
+        param = phoneValue;
+      }
+    }
+    if (identifierValue) {
+      if (identifierValue) {
+        param = identifierValue;
+      } else if (identifierValue) {
+        param = identifierValue + paramLvd;
+      } else if (identifierValue) {
+        param = identifierValue;
+      } else {
+        param = identifierValue;
       }
     }
 
@@ -446,6 +476,7 @@ function testWhite(x) {
 
   const searchOnKey = (event, name, eventName) => {
     var searchValue = event.target.value;
+    console.log(searchValue, name, eventName)
     if (name === "firstName") {
       searchValue = searchValue.replace(/[&\/\\#,+()$~%.'":@*?<>{}]/g, '')
       setfirstName(searchValue);
@@ -469,7 +500,6 @@ function testWhite(x) {
     let phoneValue = phone;
     let addharValue = addhar;
     let identifierValue = identifier;
-
     if (isValueEntered(event, name, eventName)) {
       setIdenErrorMsj("");
       setNameErrorMsj("");
@@ -484,13 +514,13 @@ function testWhite(x) {
       setLoading(true);
       setapihit(false);
 
-      
       let searchDataAlready = searchData;
 
       let isDataAlready = false;
       let alreadystoredata = [];
+
       if (searchDataAlready.length > 0 && isDataPresent === true) {
-        isDataAlready = true;
+        // isDataAlready = true;
       }
 
       if (isDataAlready) {
@@ -508,11 +538,13 @@ function testWhite(x) {
           alreadystoredata = filterOutput;
         }
         if (alreadystoredata.length > 0) {
+
           setsearchData(alreadystoredata);
           setisDataPresent(true);
           setLoading(false);
         } else {
           let param = firstNameValue;
+
           param = checkData(
             param,
             firstNameValue,
@@ -520,6 +552,8 @@ function testWhite(x) {
             phoneValue,
             identifierValue
           );
+          // console.log('firstNameValue || phoneValue || identifierValue || addharValue', param)
+
           if (firstNameValue || phoneValue || identifierValue || addharValue) {
             setnameData(false);
             setphoneData(false);
@@ -561,7 +595,7 @@ function testWhite(x) {
                       searchdatanew[0][i]["person_attributes"]["Phone Number*"];
                     mpiId = searchdatanew[0][i]["person_attributes"]["MPI ID"];
                     addharNo =
-                      searchdatanew[0][i]["person_attributes"]["Aadhar*"];
+                      searchdatanew[0][i]["person_attributes"]["Aadhaar*"];
                   }
                   let id = i;
 
@@ -632,21 +666,26 @@ function testWhite(x) {
             setLoading(false);
           }
         }
-      } else {
+      }
+      else {
         let param = firstNameValue;
         param = checkData(
           param,
           firstNameValue,
-          phoneValue,
           addharValue,
+          phoneValue,
           identifierValue
         );
+        // console.log('firstNameValue || phoneValue || identifierValue || addharValue', param + '  phoneValue>>> ' + phoneValue)
+
         if (firstNameValue || phoneValue || identifierValue || addharValue) {
           setnameData(false);
           setphoneData(false);
 
           getHispAPI(`/patient_search?name=${param}`)
             .then((response) => {
+              const { data } = response
+              // console.log('response', data)
               setapihit(true);
               var phoneNo = "";
               var mpiId = "";
@@ -654,12 +693,12 @@ function testWhite(x) {
               var searchdatanew = [];
               var visitdate = "";
               setsearchData([]);
-              searchdatanew = searchData;
+              // searchdatanew = searchData;
               var storedata = [];
 
-              for (let i = 0; i < response.data.length; i++) {
+              for (let i = 0; i < data.length; i++) {
                 var addressrarr = [];
-                searchdatanew.push(response.data);
+                searchdatanew.push(data);
                 let identifierid = searchdatanew[0][i]["identifier"];
                 let nameval = searchdatanew[0][i]["name"].toUpperCase();
                 let genval = searchdatanew[0][i]["gender"];
@@ -671,26 +710,26 @@ function testWhite(x) {
                   let country = '';
                   let pincode = '';
                   let statecode = '';
-                  if(searchdatanew[0][i]["address"]["Address1"]){
+                  if (searchdatanew[0][i]["address"]["Address1"]) {
                     addr1 = searchdatanew[0][i]["address"]["Address1"];
                   }
-                  if(searchdatanew[0][i]["address"]["Address2"]){
+                  if (searchdatanew[0][i]["address"]["Address2"]) {
                     addr2 = searchdatanew[0][i]["address"]["Address1"];
                   }
-                  if(searchdatanew[0][i]["address"]["City Village"]){
+                  if (searchdatanew[0][i]["address"]["City Village"]) {
                     district = searchdatanew[0][i]["address"]["City Village"];
                   }
-                  if(searchdatanew[0][i]["address"]["Country"]){
+                  if (searchdatanew[0][i]["address"]["Country"]) {
                     country = searchdatanew[0][i]["address"]["Country"];
                   }
-                  if(searchdatanew[0][i]["address"]["Postal Code"]){
+                  if (searchdatanew[0][i]["address"]["Postal Code"]) {
                     pincode = searchdatanew[0][i]["address"]["Postal Code"];
                   }
-                  if(searchdatanew[0][i]["address"]["State Province"]){
+                  if (searchdatanew[0][i]["address"]["State Province"]) {
                     statecode = searchdatanew[0][i]["address"]["State Province"];
                   }
 
-                  let addr =addr1+ " "+addr2 + " " + district + "  " + statecode + " " + country + " " + pincode;
+                  let addr = addr1 + " " + addr2 + " " + district + "  " + statecode + " " + country + " " + pincode;
                   addr = wordWrap(addr, 10);
                   addressrarr.push(addr);
 
@@ -700,7 +739,7 @@ function testWhite(x) {
                     searchdatanew[0][i]["person_attributes"]["Phone Number*"];
                   mpiId = searchdatanew[0][i]["person_attributes"]["MPI ID"];
                   addharNo =
-                    searchdatanew[0][i]["person_attributes"]["Aadhar*"];
+                    searchdatanew[0][i]["person_attributes"]["Aadhaar*"];
                 }
                 if (searchdatanew[0][i]["visit_date"] != undefined) {
                   visitdate = searchdatanew[0][i]["visit_date"];
@@ -838,7 +877,7 @@ function testWhite(x) {
                 id="firstName"
                 label="Name"
                 autoFocus
-                onKeyUp={(e) => searchOnKey(e, "firstName", "press")}
+                onChange={(e) => searchOnKey(e, "firstName", "press")}
                 className={classes.field}
               />
             </GridItem>
@@ -866,7 +905,7 @@ function testWhite(x) {
                 label="Addhar"
                 name="addhar"
                 autoComplete="addhar"
-                onKeyUp={(e) => searchOnKey(e, "addhar", "press")}
+                onChange={(e) => searchOnKey(e, "addhar", "press")}
                 value={classes.addhar}
                 type="number"
                 className={classes.field}
@@ -899,7 +938,7 @@ function testWhite(x) {
                 label="Phone"
                 name="phone"
                 autoComplete="phone"
-                onKeyUp={(e) => searchOnKey(e, "phone", "press")}
+                onChange={(e) => searchOnKey(e, "phone", "press")}
                 value={classes.phone}
                 type="number"
                 className={classes.field}
@@ -933,7 +972,7 @@ function testWhite(x) {
                 label="Patient Id"
                 name="identifier"
                 autoComplete="lname"
-                onKeyUp={(e) => searchOnKey(e, "identifier", "press")}
+                onChange={(e) => searchOnKey(e, "identifier", "press")}
                 value={classes.identifier}
                 className={classes.field}
               />
@@ -951,6 +990,7 @@ function testWhite(x) {
               <Button
                 variant="contained"
                 color="primary"
+                style={{ backgroundColor: '#26c6da' }}
                 onClick={(e) => searchOnKey(e, { searchDetails }, "clicked")}
                 className={clsx(classes.button, classes.field)}
               >
@@ -981,7 +1021,7 @@ function testWhite(x) {
           <DataGrid
             wrap
             rowHeight={40}
-            autoHeight ={false}
+            autoHeight={false}
             rows={searchData}
             columns={columns}
             pageSize={10}

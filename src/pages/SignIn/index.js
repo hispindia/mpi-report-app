@@ -176,6 +176,7 @@ export default function SignIn(props) {
                 type="submit"
                 fullWidth
                 variant="contained"
+                style={{backgroundColor:'#26c6da'  }}
                 color="primary"
                 disabled={loading}
                 className={classes.submit}

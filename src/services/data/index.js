@@ -1,3 +1,7 @@
 import { Location } from "./locationData";
+import { AllDistrictList, AllReportChartData } from "../reportService";
 export {
-  Location,}
+  Location,
+  AllDistrictList,
+  AllReportChartData,
+}
